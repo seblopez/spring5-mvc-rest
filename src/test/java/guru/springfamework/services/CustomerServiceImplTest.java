@@ -3,7 +3,7 @@ package guru.springfamework.services;
 import guru.springfamework.api.v1.mapper.CustomerMapper;
 import guru.springfamework.api.v1.model.CustomerDTO;
 import guru.springfamework.domain.Customer;
-import guru.springfamework.exceptions.NotFoundException;
+import guru.springfamework.exceptions.ResourceNotFoundException;
 import guru.springfamework.repositories.CustomerRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
@@ -85,7 +86,7 @@ public class CustomerServiceImplTest {
 
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test(expected = ResourceNotFoundException.class)
     public void getCustomerByIdNotFound() {
         // given
         when(customerRepository.findById(anyLong())).thenReturn(Optional.empty());
@@ -186,6 +187,14 @@ public class CustomerServiceImplTest {
         assertEquals(NAME, savedCustomerDTO.getFirstname());
         assertEquals(LAST_NAME, savedCustomerDTO.getLastname());
         assertEquals("/api/v1/customers/1", savedCustomerDTO.getCustomerUrl());
+
+    }
+
+    @Test
+    public void delete() {
+        customerService.deleteCustomerById(1L);
+
+        verify(customerRepository).deleteById(anyLong());
 
     }
 }

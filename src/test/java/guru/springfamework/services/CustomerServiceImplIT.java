@@ -4,7 +4,7 @@ import guru.springfamework.api.v1.mapper.CustomerMapper;
 import guru.springfamework.api.v1.model.CustomerDTO;
 import guru.springfamework.bootstrap.Bootstrap;
 import guru.springfamework.domain.Customer;
-import guru.springfamework.exceptions.NotFoundException;
+import guru.springfamework.exceptions.ResourceNotFoundException;
 import guru.springfamework.repositories.CategoryRepository;
 import guru.springfamework.repositories.CustomerRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -80,6 +80,6 @@ public class CustomerServiceImplIT {
                 .filter(customer -> customer.getFirstname().equals(firstName))
                 .filter(customer -> customer.getLastname().equals(lastName))
                 .findFirst()
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(ResourceNotFoundException::new);
     }
 }

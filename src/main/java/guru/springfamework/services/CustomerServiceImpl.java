@@ -3,7 +3,7 @@ package guru.springfamework.services;
 import guru.springfamework.api.v1.mapper.CustomerMapper;
 import guru.springfamework.api.v1.model.CustomerDTO;
 import guru.springfamework.domain.Customer;
-import guru.springfamework.exceptions.NotFoundException;
+import guru.springfamework.exceptions.ResourceNotFoundException;
 import guru.springfamework.repositories.CustomerRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +38,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .orElseThrow(() -> {
                     final String errorMessage = MessageFormat.format("Customer id {0} not found", id);
                     log.error(errorMessage);
-                    return new NotFoundException(errorMessage);
+                    return new ResourceNotFoundException(errorMessage);
                 });
     }
 
@@ -69,6 +69,12 @@ public class CustomerServiceImpl implements CustomerService {
                     }
                     return customerMapper.customerToCustomerDto(customerRepository.save(customer));
                 }).orElseThrow(RuntimeException::new);
+    }
+
+    @Override
+    @Transactional
+    public void deleteCustomerById(Long id) {
+        customerRepository.deleteById(id);
     }
 
     private CustomerDTO saveAndReturnCustomerDTO(Customer customer) {
