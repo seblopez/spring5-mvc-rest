@@ -4,7 +4,6 @@ import guru.springfamework.api.v1.model.CustomerDTO;
 import guru.springfamework.exceptions.NotFoundException;
 import guru.springfamework.services.CustomerService;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -15,14 +14,22 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 
+import static guru.springfamework.controllers.v1.AbstractRestControllerTest.asJsonString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class CustomerControllerTest {
+
+    static final String NAME = "Samwise";
+    static final String LAST_NAME = "Gamyi";
+    public static final String CUSTOMER_ORDERS_URL = "/shop/customers/2333/orders/";
+    public static final String CUSTOMER_URL = "/api/v1/customers/2333";
 
     @Mock
     CustomerService customerService;
@@ -44,8 +51,8 @@ public class CustomerControllerTest {
         when(customerService.getCustomers())
                 .thenReturn(Arrays.asList(
                         CustomerDTO.builder()
-                                .firstname("Sam")
-                                .lastname("Gamyi")
+                                .firstname(NAME)
+                                .lastname(LAST_NAME)
                                 .ordersUrl("/shop/customers/1/orders/")
                                 .build(),
                         CustomerDTO.builder()
@@ -56,7 +63,7 @@ public class CustomerControllerTest {
         ));
 
         // when/then
-        mockMvc.perform(get("/api/v1/customers/")
+        mockMvc.perform(get("/api/v1/customers")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.customers", hasSize(2)));
@@ -68,8 +75,8 @@ public class CustomerControllerTest {
     public void getByIdOk() throws Exception {
         // given
         when(customerService.getCustomerById(1L)).thenReturn(CustomerDTO.builder()
-                .firstname("Sam")
-                .lastname("Gamyi")
+                .firstname(NAME)
+                .lastname(LAST_NAME)
                 .ordersUrl("/shop/customers/1/orders/")
                 .build());
 
@@ -77,20 +84,68 @@ public class CustomerControllerTest {
         mockMvc.perform(get("/api/v1/customers/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.firstname", equalTo("Sam")));
+                .andExpect(jsonPath("$.firstname", equalTo(NAME)));
 
     }
 
-    @Ignore
     @Test
-    public void getByIdReturns404() throws Exception {
+    public void getByIdReturns500Error() throws Exception {
         // given
         when(customerService.getCustomerById(1232L)).thenThrow(NotFoundException.class);
 
         // when/then
         mockMvc.perform(get("/api/v1/customers/1232")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+                .andExpect(status().is5xxServerError());
+
+    }
+
+    @Test
+    public void createCustomerOk() throws Exception {
+        // given
+
+        when(customerService.createCustomer(any(CustomerDTO.class)))
+                .thenReturn(CustomerDTO.builder()
+                        .firstname(NAME)
+                        .lastname(LAST_NAME)
+                        .ordersUrl(CUSTOMER_ORDERS_URL)
+                        .customerUrl(CUSTOMER_URL)
+                        .build());
+        // when/then
+        mockMvc.perform(post("/api/v1/customers")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(CustomerDTO.builder()
+                        .firstname(NAME)
+                        .lastname(LAST_NAME)
+                        .build())))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.firstname", equalTo(NAME)))
+                .andExpect(jsonPath("$.ordersUrl", equalTo(CUSTOMER_ORDERS_URL)))
+                .andExpect(jsonPath("$.customerUrl", equalTo(CUSTOMER_URL)));
+
+    }
+
+    @Test
+    public void updateCustomerOk() throws Exception {
+        // given
+        when(customerService.updateCustomer(anyLong(), any(CustomerDTO.class)))
+                .thenReturn(CustomerDTO.builder()
+                        .firstname("Sam")
+                        .lastname(LAST_NAME)
+                        .ordersUrl(CUSTOMER_ORDERS_URL)
+                        .customerUrl(CUSTOMER_URL)
+                        .build());
+        // when/then
+        mockMvc.perform(put("/api/v1/customers/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(CustomerDTO.builder()
+                        .firstname("Sam")
+                        .lastname(LAST_NAME)
+                        .build())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstname", equalTo("Sam")))
+                .andExpect(jsonPath("$.ordersUrl", equalTo(CUSTOMER_ORDERS_URL)))
+                .andExpect(jsonPath("$.customerUrl", equalTo(CUSTOMER_URL)));
 
     }
 }

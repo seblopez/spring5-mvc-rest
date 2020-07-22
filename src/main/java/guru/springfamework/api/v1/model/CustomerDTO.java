@@ -17,6 +17,7 @@ public class CustomerDTO implements Serializable {
     String firstname;
     String lastname;
     String ordersUrl;
+    String customerUrl;
 
     @Builder.Default
     Map<String, Object> additionalProperties = new HashMap<String, Object>();

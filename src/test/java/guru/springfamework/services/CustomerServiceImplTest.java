@@ -18,12 +18,15 @@ import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 public class CustomerServiceImplTest {
 
+    public static final String NAME = "Samwise";
+    public static final String LAST_NAME = "Gamyi";
     @Mock
     CustomerRepository customerRepository;
 
@@ -41,7 +44,7 @@ public class CustomerServiceImplTest {
         List<Customer> customers = Arrays.asList(
                         Customer.builder()
                                 .firstname("Sam")
-                                .lastname("Gamyi")
+                                .lastname(LAST_NAME)
                                 .build(),
                         Customer.builder()
                                 .firstname("Frodo")
@@ -65,8 +68,8 @@ public class CustomerServiceImplTest {
         // given
         when(customerRepository.findById(anyLong())).thenReturn(Optional.of(Customer.builder()
                 .id(1L)
-                .firstname("Samwise")
-                .lastname("Gamyi")
+                .firstname(NAME)
+                .lastname(LAST_NAME)
                 .build()));
 
         // when
@@ -74,8 +77,8 @@ public class CustomerServiceImplTest {
 
         // then
         assertNotNull(customerDTO);
-        assertEquals("Samwise", customerDTO.getFirstname());
-        assertEquals("Gamyi", customerDTO.getLastname());
+        assertEquals(NAME, customerDTO.getFirstname());
+        assertEquals(LAST_NAME, customerDTO.getLastname());
         assertEquals("/shop/customers/1/orders/", customerDTO.getOrdersUrl());
 
     }
@@ -88,6 +91,57 @@ public class CustomerServiceImplTest {
         // when
         customerService.getCustomerById(234L);
 
+
+    }
+
+    @Test
+    public void createCustomer() {
+        CustomerDTO customerDTO = CustomerDTO.builder()
+                .firstname(NAME)
+                .lastname(LAST_NAME)
+                .build();
+        // given
+        final long newId = 2333L;
+        when(customerRepository.save(Customer.builder()
+                .firstname(NAME)
+                .lastname(LAST_NAME)
+                .build()))
+                .thenReturn(Customer.builder()
+                        .id(newId)
+                        .firstname(NAME)
+                        .lastname(LAST_NAME)
+                        .build());
+
+        // when
+        final CustomerDTO savedCustomerDTO = customerService.createCustomer(customerDTO);
+
+        // then
+        assertNotNull(savedCustomerDTO);
+        assertEquals(NAME, savedCustomerDTO.getFirstname());
+        assertEquals(LAST_NAME, savedCustomerDTO.getLastname());
+        assertEquals("/shop/customers/2333/orders/", savedCustomerDTO.getOrdersUrl());
+    }
+
+    @Test
+    public void updateCustomer() {
+        // given
+        when(customerRepository.save(any(Customer.class))).thenReturn(Customer.builder()
+                .id(1L)
+                .firstname("Sam")
+                .lastname(LAST_NAME)
+                .build());
+
+        // when
+        final CustomerDTO savedCustomerDTO = customerService.updateCustomer(1L, CustomerDTO.builder()
+                .firstname("Sam")
+                .lastname(LAST_NAME)
+                .build());
+
+        // then
+        assertNotNull(savedCustomerDTO);
+        assertEquals("Sam", savedCustomerDTO.getFirstname());
+        assertEquals(LAST_NAME, savedCustomerDTO.getLastname());
+        assertEquals("/api/v1/customers/1", savedCustomerDTO.getCustomerUrl());
 
     }
 }

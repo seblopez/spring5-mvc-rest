@@ -31,12 +31,31 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerDTO getCustomerById(Long id) {
-        final Customer customer = customerRepository.findById(id).orElseThrow(() -> {
-            final String errorMessage = MessageFormat.format("Customer id {0} not found", id);
-            log.error(errorMessage);
-            return new NotFoundException(errorMessage);
-        });
-        return customerMapper.customerToCustomerDto(customer);
+        return customerRepository
+                .findById(id)
+                .map(customerMapper::customerToCustomerDto)
+                .orElseThrow(() -> {
+                    final String errorMessage = MessageFormat.format("Customer id {0} not found", id);
+                    log.error(errorMessage);
+                    return new NotFoundException(errorMessage);
+                });
+    }
+
+    @Override
+    public CustomerDTO createCustomer(CustomerDTO customerDTO) {
+        return saveAndReturnCustomerDTO(customerMapper.customerDtoToCustomer(customerDTO));
+    }
+
+    @Override
+    public CustomerDTO updateCustomer(Long id, CustomerDTO customerDTO) {
+        final Customer customer = customerMapper.customerDtoToCustomer(customerDTO);
+        customer.setId(id);
+        return saveAndReturnCustomerDTO(customer);
+    }
+
+    private CustomerDTO saveAndReturnCustomerDTO(Customer customer) {
+        final Customer savedCustomer = customerRepository.save(customer);
+        return customerMapper.customerToCustomerDto(savedCustomer);
     }
 
 }

@@ -15,11 +15,21 @@ public interface CustomerMapper {
 
     CustomerMapper INSTANCE = Mappers.getMapper(CustomerMapper.class);
 
-    @Mappings({@Mapping(source = "id", target = "ordersUrl", qualifiedByName = "idToOrdersUrl")})
+    @Mappings(
+            {@Mapping(source = "id", target = "ordersUrl", qualifiedByName = "idToOrdersUrl"),
+             @Mapping(source = "id", target = "customerUrl", qualifiedByName = "idToCustomerUrl")}
+            )
     CustomerDTO customerToCustomerDto(Customer customer);
+
+    Customer customerDtoToCustomer(CustomerDTO customerDTO);
 
     @Named("idToOrdersUrl")
     default String idToOrdersUrl(Long id) {
-        return MessageFormat.format("/shop/customers/{0}/orders/", id);
+        return MessageFormat.format("/shop/customers/{0}/orders/", id.toString());
+    }
+
+    @Named("idToCustomerUrl")
+    default String idToCustomerUrl(Long id)  {
+        return MessageFormat.format("/api/v1/customers/{0}", id.toString());
     }
 }
