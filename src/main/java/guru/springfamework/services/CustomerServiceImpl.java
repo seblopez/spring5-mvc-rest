@@ -68,7 +68,7 @@ public class CustomerServiceImpl implements CustomerService {
                         customer.setLastname(customerDTO.getLastname());
                     }
                     return customerMapper.customerToCustomerDto(customerRepository.save(customer));
-                }).orElseThrow(RuntimeException::new);
+                }).orElseThrow(ResourceNotFoundException::new);
     }
 
     @Override

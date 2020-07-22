@@ -1,6 +1,7 @@
 package guru.springfamework.controllers.v1;
 
 import guru.springfamework.api.v1.model.CategoryDTO;
+import guru.springfamework.exceptions.ResourceNotFoundException;
 import guru.springfamework.services.CategoryService;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +35,10 @@ public class CategoryControllerTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(categoryController).build();
+        mockMvc = MockMvcBuilders
+                .standaloneSetup(categoryController)
+                .setControllerAdvice(new RestResponseEntityExceptionHandler())
+                .build();
     }
 
     @Test
@@ -54,7 +58,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void getCategoryByName() throws Exception {
+    public void getCategoryByNameOk() throws Exception {
         when(categoryService.getCategoryByName("Pepe")).thenReturn(CategoryDTO.builder()
                 .id(1L)
                 .name("Pepe")
@@ -64,6 +68,16 @@ public class CategoryControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", equalTo("Pepe")));
+
+    }
+
+    @Test
+    public void getCategoryByNameNotFound() throws Exception {
+        when(categoryService.getCategoryByName("Pepe")).thenThrow(new ResourceNotFoundException());
+
+        mockMvc.perform(get("/api/v1/categories/Pepe")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
 
     }
 }

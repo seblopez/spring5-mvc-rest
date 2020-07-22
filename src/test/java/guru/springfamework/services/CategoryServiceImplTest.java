@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -57,7 +58,11 @@ public class CategoryServiceImplTest {
 
     @Test
     public void getCategoryByName() {
-        when(categoryRepository.findByName(anyString())).thenReturn(Category.builder().id(ID).name(NAME).build());
+        when(categoryRepository.findByName(anyString()))
+                .thenReturn(Optional.of(Category.builder()
+                        .id(ID)
+                        .name(NAME)
+                        .build()));
 
         final CategoryDTO categoryDTO = categoryService.getCategoryByName(NAME);
 

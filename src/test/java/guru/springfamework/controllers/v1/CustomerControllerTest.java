@@ -4,7 +4,6 @@ import guru.springfamework.api.v1.model.CustomerDTO;
 import guru.springfamework.exceptions.ResourceNotFoundException;
 import guru.springfamework.services.CustomerService;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -42,9 +41,12 @@ public class CustomerControllerTest {
     MockMvc mockMvc;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(customerController).build();
+        mockMvc = MockMvcBuilders
+                .standaloneSetup(customerController)
+                .setControllerAdvice(new RestResponseEntityExceptionHandler())
+                .build();
     }
 
     @Test
@@ -90,16 +92,15 @@ public class CustomerControllerTest {
 
     }
 
-    @Ignore
     @Test
-    public void getByIdReturns500Error() throws Exception {
+    public void getByIdReturns404Error() throws Exception {
         // given
         when(customerService.getCustomerById(1232L)).thenThrow(ResourceNotFoundException.class);
 
         // when/then
         mockMvc.perform(get("/api/v1/customers/1232")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is5xxServerError());
+                .andExpect(status().isNotFound());
 
     }
 

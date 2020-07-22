@@ -1,6 +1,7 @@
 package guru.springfamework.controllers.v1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import guru.springfamework.exceptions.ResourceNotFoundException;
 
 public class AbstractRestControllerTest {
 
@@ -8,7 +9,7 @@ public class AbstractRestControllerTest {
         try {
             return new ObjectMapper().writeValueAsString(obj);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ResourceNotFoundException(e);
         }
     }
 }
