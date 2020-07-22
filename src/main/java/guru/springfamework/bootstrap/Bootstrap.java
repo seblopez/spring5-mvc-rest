@@ -27,7 +27,7 @@ public class Bootstrap implements CommandLineRunner {
     private void loadCustomers() {
         final List<Customer> customers = Arrays.asList(
                 Customer.builder()
-                        .firstname("Sam")
+                        .firstname("Samwise")
                         .lastname("Gamyi")
                         .build(),
                 Customer.builder()

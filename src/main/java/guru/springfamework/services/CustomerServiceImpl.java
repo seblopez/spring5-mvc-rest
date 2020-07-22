@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,15 +43,32 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional
     public CustomerDTO createCustomer(CustomerDTO customerDTO) {
         return saveAndReturnCustomerDTO(customerMapper.customerDtoToCustomer(customerDTO));
     }
 
     @Override
+    @Transactional
     public CustomerDTO updateCustomer(Long id, CustomerDTO customerDTO) {
         final Customer customer = customerMapper.customerDtoToCustomer(customerDTO);
         customer.setId(id);
         return saveAndReturnCustomerDTO(customer);
+    }
+
+    @Override
+    @Transactional
+    public CustomerDTO patchCustomer(Long id, CustomerDTO customerDTO) {
+        return customerRepository.findById(id)
+                .map(customer -> {
+                    if(customerDTO.getFirstname() != null) {
+                        customer.setFirstname(customerDTO.getFirstname());
+                    }
+                    if(customerDTO.getLastname() != null) {
+                        customer.setLastname(customerDTO.getLastname());
+                    }
+                    return customerMapper.customerToCustomerDto(customerRepository.save(customer));
+                }).orElseThrow(RuntimeException::new);
     }
 
     private CustomerDTO saveAndReturnCustomerDTO(Customer customer) {

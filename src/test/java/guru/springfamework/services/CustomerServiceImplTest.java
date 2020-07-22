@@ -43,10 +43,12 @@ public class CustomerServiceImplTest {
         // given
         List<Customer> customers = Arrays.asList(
                         Customer.builder()
+                                .id(1L)
                                 .firstname("Sam")
                                 .lastname(LAST_NAME)
                                 .build(),
                         Customer.builder()
+                                .id(2L)
                                 .firstname("Frodo")
                                 .lastname("Baggins")
                                 .build()
@@ -140,6 +142,48 @@ public class CustomerServiceImplTest {
         // then
         assertNotNull(savedCustomerDTO);
         assertEquals("Sam", savedCustomerDTO.getFirstname());
+        assertEquals(LAST_NAME, savedCustomerDTO.getLastname());
+        assertEquals("/api/v1/customers/1", savedCustomerDTO.getCustomerUrl());
+
+    }
+
+    @Test
+    public void patchCustomerOk() {
+        // given
+        when(customerRepository.save(any(Customer.class))).thenReturn(Customer.builder()
+                .id(1L)
+                .firstname("Sam")
+                .lastname(LAST_NAME)
+                .build());
+
+        // when
+        final CustomerDTO savedCustomerDTO = customerService.updateCustomer(1L, CustomerDTO.builder()
+                .firstname("Sam")
+                .lastname(LAST_NAME)
+                .build());
+
+        // then
+        assertNotNull(savedCustomerDTO);
+        assertEquals("Sam", savedCustomerDTO.getFirstname());
+        assertEquals(LAST_NAME, savedCustomerDTO.getLastname());
+        assertEquals("/api/v1/customers/1", savedCustomerDTO.getCustomerUrl());
+    }
+
+    @Test
+    public void patchCustomerNoChangesOk() {
+        // given
+        when(customerRepository.save(any(Customer.class))).thenReturn(Customer.builder()
+                .id(1L)
+                .firstname(NAME)
+                .lastname(LAST_NAME)
+                .build());
+
+        // when
+        final CustomerDTO savedCustomerDTO = customerService.updateCustomer(1L, CustomerDTO.builder().build());
+
+        // then
+        assertNotNull(savedCustomerDTO);
+        assertEquals(NAME, savedCustomerDTO.getFirstname());
         assertEquals(LAST_NAME, savedCustomerDTO.getLastname());
         assertEquals("/api/v1/customers/1", savedCustomerDTO.getCustomerUrl());
 
