@@ -1,5 +1,6 @@
 package guru.springfamework.api.v1.model;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 import java.io.Serializable;
@@ -15,6 +16,8 @@ import java.io.Serializable;
 @Data
 public class CategoryDTO implements Serializable {
     final static long serialVersionUID = 2086084393710666005L;
+
+    @ApiModelProperty(value = "Category id", required = false)
     private Long id;
     private String name;
 }
