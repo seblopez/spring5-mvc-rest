@@ -2,8 +2,10 @@ package guru.springfamework.bootstrap;
 
 import guru.springfamework.domain.Category;
 import guru.springfamework.domain.Customer;
+import guru.springfamework.domain.Vendor;
 import guru.springfamework.repositories.CategoryRepository;
 import guru.springfamework.repositories.CustomerRepository;
+import guru.springfamework.repositories.VendorRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -17,11 +19,36 @@ public class Bootstrap implements CommandLineRunner {
 
     CategoryRepository categoryRepository;
     CustomerRepository customerRepository;
+    VendorRepository vendorRepository;
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         loadCategories();
         loadCustomers();
+        loadVendors();
+    }
+
+    private void loadVendors() {
+        final List<Vendor> vendors = Arrays.asList(
+                Vendor.builder()
+                        .name("La Covacha")
+                        .build(),
+                Vendor.builder()
+                        .name("La Rosadita")
+                        .build(),
+                Vendor.builder()
+                        .name("Austral Construcciones")
+                        .build(),
+                Vendor.builder()
+                        .name("Electroingenieria")
+                        .build(),
+                Vendor.builder()
+                        .name("Hotel Los Sauces")
+                        .build()
+        );
+
+        vendorRepository.saveAll(vendors);
+
     }
 
     private void loadCustomers() {

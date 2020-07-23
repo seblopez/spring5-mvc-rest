@@ -72,7 +72,6 @@ public class CustomerControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.customers", hasSize(2)));
 
-
     }
 
     @Test
@@ -107,7 +106,6 @@ public class CustomerControllerTest {
     @Test
     public void createCustomerOk() throws Exception {
         // given
-
         when(customerService.createCustomer(any(CustomerDTO.class)))
                 .thenReturn(CustomerDTO.builder()
                         .firstname(NAME)
