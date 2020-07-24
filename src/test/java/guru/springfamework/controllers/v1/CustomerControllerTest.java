@@ -68,6 +68,7 @@ public class CustomerControllerTest {
 
         // when/then
         mockMvc.perform(get("/api/v1/customers")
+                .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.customers", hasSize(2)));
@@ -85,6 +86,7 @@ public class CustomerControllerTest {
 
         // when/then
         mockMvc.perform(get("/api/v1/customers/1")
+                .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstname", equalTo(NAME)));
@@ -115,6 +117,7 @@ public class CustomerControllerTest {
                         .build());
         // when/then
         mockMvc.perform(post("/api/v1/customers")
+                .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(CustomerDTO.builder()
                         .firstname(NAME)
@@ -139,6 +142,7 @@ public class CustomerControllerTest {
                         .build());
         // when/then
         mockMvc.perform(put("/api/v1/customers/1")
+                .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(CustomerDTO.builder()
                         .firstname("Sam")

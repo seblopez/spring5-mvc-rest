@@ -68,6 +68,7 @@ public class VendorControllerTest {
 
         // when/then
         mockMvc.perform(get("/api/v1/vendors")
+                .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.vendors", hasSize(4)));
@@ -84,6 +85,7 @@ public class VendorControllerTest {
 
         // when/then
         mockMvc.perform(get("/api/v1/vendors/1")
+                .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", equalTo(NAME)));
@@ -110,6 +112,7 @@ public class VendorControllerTest {
                         .build());
         // when/then
         mockMvc.perform(post("/api/v1/vendors")
+                .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(VendorDTO.builder()
                         .name(NAME)
@@ -129,6 +132,7 @@ public class VendorControllerTest {
                         .build());
         // when/then
         mockMvc.perform(put("/api/v1/vendors/1")
+                .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(VendorDTO.builder()
                         .name(NAME + SA)
